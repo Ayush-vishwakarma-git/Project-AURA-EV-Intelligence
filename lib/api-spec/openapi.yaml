@@ -1,0 +1,1790 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Project AURA - AI Unified Readiness & Analytics API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: dashboard
+    description: Global KPI dashboard
+  - name: battery
+    description: Battery asset performance intelligence
+  - name: fleet
+    description: Fleet electrification optimizer
+  - name: supply-chain
+    description: Supply chain intelligence
+  - name: manufacturing
+    description: Manufacturing quality intelligence
+  - name: carbon
+    description: Carbon intelligence
+  - name: ai-insights
+    description: AI Command Center insights
+  - name: alerts
+    description: Alert management
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ─── DASHBOARD KPIs ───────────────────────────────────────────────────────
+  /dashboard/kpis:
+    get:
+      operationId: getDashboardKpis
+      tags: [dashboard]
+      summary: Get global KPI metrics
+      responses:
+        "200":
+          description: Dashboard KPI metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardKpis"
+
+  /dashboard/activity:
+    get:
+      operationId: getDashboardActivity
+      tags: [dashboard]
+      summary: Get recent platform activity feed
+      responses:
+        "200":
+          description: Recent activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  # ─── BATTERY INTELLIGENCE ─────────────────────────────────────────────────
+  /battery/assets:
+    get:
+      operationId: getBatteryAssets
+      tags: [battery]
+      summary: List battery assets with health metrics
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [healthy, warning, critical, all]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Paginated battery assets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatteryAssetPage"
+
+  /battery/assets/{assetId}:
+    get:
+      operationId: getBatteryAsset
+      tags: [battery]
+      summary: Get detailed battery asset info
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Battery asset detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatteryAssetDetail"
+        "404":
+          description: Not found
+
+  /battery/health-summary:
+    get:
+      operationId: getBatteryHealthSummary
+      tags: [battery]
+      summary: SOH distribution and degradation trend data
+      responses:
+        "200":
+          description: Battery health summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatteryHealthSummary"
+
+  /battery/degradation-trend:
+    get:
+      operationId: getBatteryDegradationTrend
+      tags: [battery]
+      summary: Battery degradation trend over time
+      parameters:
+        - name: months
+          in: query
+          schema:
+            type: integer
+            default: 12
+      responses:
+        "200":
+          description: Degradation trend data points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DegradationDataPoint"
+
+  /battery/alerts:
+    get:
+      operationId: getBatteryAlerts
+      tags: [battery]
+      summary: Critical battery alerts
+      responses:
+        "200":
+          description: Battery alerts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BatteryAlert"
+
+  /battery/maintenance-schedule:
+    get:
+      operationId: getMaintenanceSchedule
+      tags: [battery]
+      summary: Predictive maintenance schedule
+      responses:
+        "200":
+          description: Maintenance schedule items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceItem"
+
+  # ─── FLEET OPTIMIZER ──────────────────────────────────────────────────────
+  /fleet/vehicles:
+    get:
+      operationId: getFleetVehicles
+      tags: [fleet]
+      summary: List fleet vehicles with status
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Paginated fleet vehicles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetVehiclePage"
+
+  /fleet/readiness:
+    get:
+      operationId: getFleetReadiness
+      tags: [fleet]
+      summary: Fleet electrification readiness score and breakdown
+      responses:
+        "200":
+          description: Fleet readiness metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetReadiness"
+
+  /fleet/ev-recommendations:
+    get:
+      operationId: getEvRecommendations
+      tags: [fleet]
+      summary: Recommended EV models for transition
+      responses:
+        "200":
+          description: EV model recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EvModelRecommendation"
+
+  /fleet/charging-analysis:
+    get:
+      operationId: getChargingAnalysis
+      tags: [fleet]
+      summary: Charging infrastructure analysis
+      responses:
+        "200":
+          description: Charging analysis data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChargingAnalysis"
+
+  /fleet/financial-savings:
+    get:
+      operationId: getFleetFinancialSavings
+      tags: [fleet]
+      summary: Fleet electrification financial savings projection
+      responses:
+        "200":
+          description: Financial savings data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetFinancialSavings"
+
+  /fleet/transition-timeline:
+    get:
+      operationId: getTransitionTimeline
+      tags: [fleet]
+      summary: EV transition timeline milestones
+      responses:
+        "200":
+          description: Transition timeline items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransitionMilestone"
+
+  # ─── SUPPLY CHAIN INTELLIGENCE ────────────────────────────────────────────
+  /supply-chain/suppliers:
+    get:
+      operationId: getSuppliers
+      tags: [supply-chain]
+      summary: List suppliers with risk scores
+      responses:
+        "200":
+          description: Supplier list with risk data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+
+  /supply-chain/risk-summary:
+    get:
+      operationId: getSupplyChainRiskSummary
+      tags: [supply-chain]
+      summary: Supply chain risk dashboard summary
+      responses:
+        "200":
+          description: Risk summary metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplyChainRiskSummary"
+
+  /supply-chain/mineral-risks:
+    get:
+      operationId: getMineralRisks
+      tags: [supply-chain]
+      summary: Critical mineral risk analysis
+      responses:
+        "200":
+          description: Mineral risk data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MineralRisk"
+
+  /supply-chain/country-risks:
+    get:
+      operationId: getCountryRisks
+      tags: [supply-chain]
+      summary: Country-level supply chain risk
+      responses:
+        "200":
+          description: Country risk data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountryRisk"
+
+  /supply-chain/geopolitical-alerts:
+    get:
+      operationId: getGeopoliticalAlerts
+      tags: [supply-chain]
+      summary: Geopolitical risk alerts
+      responses:
+        "200":
+          description: Geopolitical alert list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GeopoliticalAlert"
+
+  /supply-chain/network:
+    get:
+      operationId: getSupplyChainNetwork
+      tags: [supply-chain]
+      summary: Supply chain network graph data for React Flow
+      responses:
+        "200":
+          description: Network nodes and edges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplyChainNetwork"
+
+  # ─── MANUFACTURING QUALITY ────────────────────────────────────────────────
+  /manufacturing/kpis:
+    get:
+      operationId: getManufacturingKpis
+      tags: [manufacturing]
+      summary: Manufacturing quality KPIs
+      responses:
+        "200":
+          description: Production KPI metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManufacturingKpis"
+
+  /manufacturing/quality-drift:
+    get:
+      operationId: getQualityDrift
+      tags: [manufacturing]
+      summary: Quality drift trend over time
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        "200":
+          description: Quality drift data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QualityDriftPoint"
+
+  /manufacturing/defects:
+    get:
+      operationId: getDefectAnalysis
+      tags: [manufacturing]
+      summary: Defect category analysis
+      responses:
+        "200":
+          description: Defect analysis data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DefectCategory"
+
+  /manufacturing/inspections:
+    get:
+      operationId: getInspectionResults
+      tags: [manufacturing]
+      summary: Recent inspection results
+      responses:
+        "200":
+          description: Inspection result list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InspectionResult"
+
+  /manufacturing/heatmap:
+    get:
+      operationId: getQualityHeatmap
+      tags: [manufacturing]
+      summary: Quality heatmap data by line and shift
+      responses:
+        "200":
+          description: Heatmap matrix data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QualityHeatmap"
+
+  # ─── CARBON INTELLIGENCE ──────────────────────────────────────────────────
+  /carbon/overview:
+    get:
+      operationId: getCarbonOverview
+      tags: [carbon]
+      summary: Carbon emissions overview and net-zero progress
+      responses:
+        "200":
+          description: Carbon overview data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CarbonOverview"
+
+  /carbon/emission-trend:
+    get:
+      operationId: getCarbonEmissionTrend
+      tags: [carbon]
+      summary: Carbon emission trend by scope over time
+      parameters:
+        - name: months
+          in: query
+          schema:
+            type: integer
+            default: 24
+      responses:
+        "200":
+          description: Emission trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmissionTrendPoint"
+
+  /carbon/regional:
+    get:
+      operationId: getCarbonRegional
+      tags: [carbon]
+      summary: Regional carbon emissions data for map
+      responses:
+        "200":
+          description: Regional carbon data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionalCarbon"
+
+  /carbon/savings-breakdown:
+    get:
+      operationId: getCarbonSavingsBreakdown
+      tags: [carbon]
+      summary: Carbon savings waterfall breakdown
+      responses:
+        "200":
+          description: Carbon savings items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CarbonSavingsItem"
+
+  # ─── AI COMMAND CENTER ────────────────────────────────────────────────────
+  /ai/insights:
+    get:
+      operationId: getAiInsights
+      tags: [ai-insights]
+      summary: AI-generated insight cards
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, accepted, dismissed, all]
+            default: pending
+      responses:
+        "200":
+          description: AI insight cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiInsight"
+
+  /ai/insights/{insightId}/accept:
+    post:
+      operationId: acceptAiInsight
+      tags: [ai-insights]
+      summary: Accept an AI recommendation
+      parameters:
+        - name: insightId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated insight
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiInsight"
+        "404":
+          description: Not found
+
+  /ai/insights/{insightId}/dismiss:
+    post:
+      operationId: dismissAiInsight
+      tags: [ai-insights]
+      summary: Dismiss an AI recommendation
+      parameters:
+        - name: insightId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated insight
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiInsight"
+        "404":
+          description: Not found
+
+  /ai/agent-flow:
+    get:
+      operationId: getAgentFlow
+      tags: [ai-insights]
+      summary: AI agent collaboration flow graph for React Flow
+      responses:
+        "200":
+          description: Agent flow nodes and edges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentFlow"
+
+  /ai/executive-summary:
+    get:
+      operationId: getExecutiveSummary
+      tags: [ai-insights]
+      summary: AI-generated executive summary
+      responses:
+        "200":
+          description: Executive summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecutiveSummary"
+
+  # ─── ALERTS ───────────────────────────────────────────────────────────────
+  /alerts:
+    get:
+      operationId: getAlerts
+      tags: [alerts]
+      summary: Get all platform alerts
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, warning, info, all]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Alert list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alert"
+
+  /alerts/{alertId}/acknowledge:
+    post:
+      operationId: acknowledgeAlert
+      tags: [alerts]
+      summary: Acknowledge an alert
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Acknowledged alert
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+
+  # ─── GEO / MAP ────────────────────────────────────────────────────────────
+  /geo/fleet-locations:
+    get:
+      operationId: getFleetLocations
+      tags: [fleet]
+      summary: Live fleet vehicle locations for map
+      responses:
+        "200":
+          description: Fleet location markers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FleetLocationMarker"
+
+  /geo/charging-stations:
+    get:
+      operationId: getChargingStations
+      tags: [fleet]
+      summary: Charging station locations for map
+      responses:
+        "200":
+          description: Charging station markers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChargingStation"
+
+  /geo/supplier-locations:
+    get:
+      operationId: getSupplierLocations
+      tags: [supply-chain]
+      summary: Supplier geographic locations for map
+      responses:
+        "200":
+          description: Supplier location markers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplierLocation"
+
+# ─── SCHEMAS ──────────────────────────────────────────────────────────────────
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    # ── DASHBOARD ──
+    DashboardKpis:
+      type: object
+      required:
+        - fleetSize
+        - criticalAlerts
+        - avgBatterySoh
+        - avgRul
+        - supplyChainRiskScore
+        - fleetReadinessScore
+        - totalCostSavings
+        - carbonReduction
+      properties:
+        fleetSize:
+          $ref: "#/components/schemas/KpiMetric"
+        criticalAlerts:
+          $ref: "#/components/schemas/KpiMetric"
+        avgBatterySoh:
+          $ref: "#/components/schemas/KpiMetric"
+        avgRul:
+          $ref: "#/components/schemas/KpiMetric"
+        supplyChainRiskScore:
+          $ref: "#/components/schemas/KpiMetric"
+        fleetReadinessScore:
+          $ref: "#/components/schemas/KpiMetric"
+        totalCostSavings:
+          $ref: "#/components/schemas/KpiMetric"
+        carbonReduction:
+          $ref: "#/components/schemas/KpiMetric"
+
+    KpiMetric:
+      type: object
+      required: [value, unit, trend, changePercent, sparkline]
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+        trend:
+          type: string
+          enum: [up, down, stable]
+        changePercent:
+          type: number
+        sparkline:
+          type: array
+          items:
+            type: number
+
+    ActivityItem:
+      type: object
+      required: [id, timestamp, type, message, severity]
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [battery, fleet, supply-chain, manufacturing, carbon, ai]
+        message:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        assetId:
+          type: ["string", "null"]
+
+    # ── BATTERY ──
+    BatteryAsset:
+      type: object
+      required: [id, batteryId, vehicleId, soh, rul, status, temperature, cycles, lastUpdated]
+      properties:
+        id:
+          type: string
+        batteryId:
+          type: string
+        vehicleId:
+          type: string
+        soh:
+          type: number
+          description: State of health percentage (0-100)
+        rul:
+          type: number
+          description: Remaining useful life in days
+        status:
+          type: string
+          enum: [healthy, warning, critical]
+        temperature:
+          type: number
+          description: Temperature in Celsius
+        cycles:
+          type: integer
+        capacity:
+          type: number
+          description: Current capacity in kWh
+        nominalCapacity:
+          type: number
+          description: Nominal capacity in kWh
+        lastUpdated:
+          type: string
+          format: date-time
+        predictedFailureDate:
+          type: ["string", "null"]
+          format: date-time
+        location:
+          type: ["string", "null"]
+
+    BatteryAssetDetail:
+      type: object
+      required: [id, batteryId, vehicleId, soh, rul, status, temperature, cycles, history, maintenanceHistory]
+      properties:
+        id:
+          type: string
+        batteryId:
+          type: string
+        vehicleId:
+          type: string
+        soh:
+          type: number
+        rul:
+          type: number
+        status:
+          type: string
+          enum: [healthy, warning, critical]
+        temperature:
+          type: number
+        cycles:
+          type: integer
+        capacity:
+          type: number
+        nominalCapacity:
+          type: number
+        lastUpdated:
+          type: string
+          format: date-time
+        predictedFailureDate:
+          type: ["string", "null"]
+          format: date-time
+        location:
+          type: ["string", "null"]
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatteryHistoryPoint"
+        maintenanceHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceHistoryItem"
+        aiRiskNarrative:
+          type: ["string", "null"]
+
+    BatteryHistoryPoint:
+      type: object
+      required: [date, soh, temperature, cycles]
+      properties:
+        date:
+          type: string
+          format: date
+        soh:
+          type: number
+        temperature:
+          type: number
+        cycles:
+          type: integer
+
+    MaintenanceHistoryItem:
+      type: object
+      required: [date, type, description, technician]
+      properties:
+        date:
+          type: string
+          format: date
+        type:
+          type: string
+        description:
+          type: string
+        technician:
+          type: string
+
+    BatteryAssetPage:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatteryAsset"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    BatteryHealthSummary:
+      type: object
+      required: [sohDistribution, totalAssets, healthyCount, warningCount, criticalCount, avgSoh, avgRul]
+      properties:
+        sohDistribution:
+          type: array
+          items:
+            $ref: "#/components/schemas/SohBucket"
+        totalAssets:
+          type: integer
+        healthyCount:
+          type: integer
+        warningCount:
+          type: integer
+        criticalCount:
+          type: integer
+        avgSoh:
+          type: number
+        avgRul:
+          type: number
+        estimatedSavings:
+          type: number
+
+    SohBucket:
+      type: object
+      required: [range, count, percentage]
+      properties:
+        range:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+
+    DegradationDataPoint:
+      type: object
+      required: [month, avgSoh, p10Soh, p90Soh, predicted]
+      properties:
+        month:
+          type: string
+        avgSoh:
+          type: number
+        p10Soh:
+          type: number
+        p90Soh:
+          type: number
+        predicted:
+          type: boolean
+
+    BatteryAlert:
+      type: object
+      required: [id, batteryId, vehicleId, type, severity, message, timestamp, acknowledged]
+      properties:
+        id:
+          type: string
+        batteryId:
+          type: string
+        vehicleId:
+          type: string
+        type:
+          type: string
+          enum: [temperature, degradation, capacity, voltage, rul]
+        severity:
+          type: string
+          enum: [critical, warning]
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        acknowledged:
+          type: boolean
+
+    MaintenanceItem:
+      type: object
+      required: [id, batteryId, vehicleId, scheduledDate, type, priority, estimatedDowntime, estimatedCost]
+      properties:
+        id:
+          type: string
+        batteryId:
+          type: string
+        vehicleId:
+          type: string
+        scheduledDate:
+          type: string
+          format: date
+        type:
+          type: string
+        priority:
+          type: string
+          enum: [high, medium, low]
+        estimatedDowntime:
+          type: number
+          description: Hours
+        estimatedCost:
+          type: number
+
+    # ── FLEET ──
+    FleetVehicle:
+      type: object
+      required: [id, vehicleId, make, model, year, type, status, batterySOH, mileage, lastService, driver]
+      properties:
+        id:
+          type: string
+        vehicleId:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        type:
+          type: string
+          enum: [BEV, PHEV, HEV, ICE]
+        status:
+          type: string
+          enum: [active, maintenance, charging, idle, offline]
+        batterySOH:
+          type: ["number", "null"]
+        mileage:
+          type: number
+        lastService:
+          type: string
+          format: date
+        driver:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        electrificationScore:
+          type: ["number", "null"]
+
+    FleetVehiclePage:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/FleetVehicle"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    FleetReadiness:
+      type: object
+      required: [overallScore, evCount, iceCount, hybridCount, readinessByCategory, scoreTrend]
+      properties:
+        overallScore:
+          type: number
+        evCount:
+          type: integer
+        iceCount:
+          type: integer
+        hybridCount:
+          type: integer
+        readinessByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadinessCategory"
+        scoreTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+
+    ReadinessCategory:
+      type: object
+      required: [category, score, maxScore]
+      properties:
+        category:
+          type: string
+        score:
+          type: number
+        maxScore:
+          type: number
+
+    TrendPoint:
+      type: object
+      required: [date, value]
+      properties:
+        date:
+          type: string
+        value:
+          type: number
+
+    EvModelRecommendation:
+      type: object
+      required: [id, make, model, type, range, chargingSpeed, tco5Year, score, reasons]
+      properties:
+        id:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        type:
+          type: string
+        range:
+          type: number
+          description: Miles
+        chargingSpeed:
+          type: number
+          description: kW
+        tco5Year:
+          type: number
+          description: 5-year total cost of ownership in USD
+        score:
+          type: number
+        reasons:
+          type: array
+          items:
+            type: string
+
+    ChargingAnalysis:
+      type: object
+      required: [totalStations, utilizationRate, avgChargingTime, peakHours, chargingByDay, demandForecast]
+      properties:
+        totalStations:
+          type: integer
+        utilizationRate:
+          type: number
+        avgChargingTime:
+          type: number
+        peakHours:
+          type: array
+          items:
+            type: integer
+        chargingByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChargingDayData"
+        demandForecast:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+
+    ChargingDayData:
+      type: object
+      required: [day, sessions, energy, peakLoad]
+      properties:
+        day:
+          type: string
+        sessions:
+          type: integer
+        energy:
+          type: number
+          description: kWh
+        peakLoad:
+          type: number
+          description: kW
+
+    FleetFinancialSavings:
+      type: object
+      required: [totalSavings, fuelSavings, maintenanceSavings, incentives, savingsBreakdown, projections]
+      properties:
+        totalSavings:
+          type: number
+        fuelSavings:
+          type: number
+        maintenanceSavings:
+          type: number
+        incentives:
+          type: number
+        savingsBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/SavingsBreakdownItem"
+        projections:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+
+    SavingsBreakdownItem:
+      type: object
+      required: [category, value, change]
+      properties:
+        category:
+          type: string
+        value:
+          type: number
+        change:
+          type: number
+
+    TransitionMilestone:
+      type: object
+      required: [id, title, targetDate, status, vehicleCount, description]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        targetDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [completed, in-progress, planned]
+        vehicleCount:
+          type: integer
+        description:
+          type: string
+
+    FleetLocationMarker:
+      type: object
+      required: [id, vehicleId, lat, lng, status, batteryLevel]
+      properties:
+        id:
+          type: string
+        vehicleId:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        status:
+          type: string
+          enum: [active, charging, idle, offline]
+        batteryLevel:
+          type: number
+        driver:
+          type: ["string", "null"]
+
+    ChargingStation:
+      type: object
+      required: [id, name, lat, lng, totalPorts, availablePorts, maxKw, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        totalPorts:
+          type: integer
+        availablePorts:
+          type: integer
+        maxKw:
+          type: number
+        status:
+          type: string
+          enum: [operational, degraded, offline]
+        operator:
+          type: ["string", "null"]
+
+    # ── SUPPLY CHAIN ──
+    Supplier:
+      type: object
+      required: [id, name, country, category, riskScore, riskLevel, minerals, concentration, deliveryScore]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        category:
+          type: string
+          enum: [battery-cells, raw-materials, electronics, manufacturing, logistics]
+        riskScore:
+          type: number
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        minerals:
+          type: array
+          items:
+            type: string
+        concentration:
+          type: number
+          description: Percentage of supply from this supplier
+        deliveryScore:
+          type: number
+        geopoliticalRisk:
+          type: ["number", "null"]
+
+    SupplyChainRiskSummary:
+      type: object
+      required: [overallRisk, criticalSuppliers, highRiskMinerals, concentrationRisk, geopoliticalRisk, riskByCategory]
+      properties:
+        overallRisk:
+          type: number
+        criticalSuppliers:
+          type: integer
+        highRiskMinerals:
+          type: integer
+        concentrationRisk:
+          type: number
+        geopoliticalRisk:
+          type: number
+        riskByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/RiskCategory"
+
+    RiskCategory:
+      type: object
+      required: [category, risk, suppliers]
+      properties:
+        category:
+          type: string
+        risk:
+          type: number
+        suppliers:
+          type: integer
+
+    MineralRisk:
+      type: object
+      required: [mineral, riskScore, riskLevel, primaryCountry, alternatives, priceTrend, criticalityScore]
+      properties:
+        mineral:
+          type: string
+        riskScore:
+          type: number
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        primaryCountry:
+          type: string
+        alternatives:
+          type: integer
+        priceTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        criticalityScore:
+          type: number
+
+    CountryRisk:
+      type: object
+      required: [country, countryCode, riskScore, politicalStability, tradeRelations, supplierCount]
+      properties:
+        country:
+          type: string
+        countryCode:
+          type: string
+        riskScore:
+          type: number
+        politicalStability:
+          type: number
+        tradeRelations:
+          type: number
+        supplierCount:
+          type: integer
+
+    GeopoliticalAlert:
+      type: object
+      required: [id, title, country, severity, description, timestamp, impactedMinerals]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        country:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        impactedMinerals:
+          type: array
+          items:
+            type: string
+
+    SupplyChainNetwork:
+      type: object
+      required: [nodes, edges]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkEdge"
+
+    NetworkNode:
+      type: object
+      required: [id, label, type, riskScore, position]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: [manufacturer, tier1, tier2, raw-material, logistics]
+        riskScore:
+          type: number
+        country:
+          type: ["string", "null"]
+        position:
+          $ref: "#/components/schemas/NodePosition"
+
+    NodePosition:
+      type: object
+      required: [x, y]
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+
+    NetworkEdge:
+      type: object
+      required: [id, source, target, flow, label]
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        target:
+          type: string
+        flow:
+          type: number
+        label:
+          type: string
+
+    SupplierLocation:
+      type: object
+      required: [id, name, country, lat, lng, riskLevel, minerals]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        minerals:
+          type: array
+          items:
+            type: string
+
+    # ── MANUFACTURING ──
+    ManufacturingKpis:
+      type: object
+      required: [oee, firstPassYield, defectRate, productionVolume, throughput, mtbf, mttr]
+      properties:
+        oee:
+          $ref: "#/components/schemas/KpiMetric"
+        firstPassYield:
+          $ref: "#/components/schemas/KpiMetric"
+        defectRate:
+          $ref: "#/components/schemas/KpiMetric"
+        productionVolume:
+          $ref: "#/components/schemas/KpiMetric"
+        throughput:
+          $ref: "#/components/schemas/KpiMetric"
+        mtbf:
+          $ref: "#/components/schemas/KpiMetric"
+        mttr:
+          $ref: "#/components/schemas/KpiMetric"
+
+    QualityDriftPoint:
+      type: object
+      required: [date, defectRate, target, upperLimit, lowerLimit]
+      properties:
+        date:
+          type: string
+          format: date
+        defectRate:
+          type: number
+        target:
+          type: number
+        upperLimit:
+          type: number
+        lowerLimit:
+          type: number
+
+    DefectCategory:
+      type: object
+      required: [category, count, percentage, trend, severity]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+        trend:
+          type: string
+          enum: [up, down, stable]
+        severity:
+          type: string
+          enum: [critical, major, minor]
+
+    InspectionResult:
+      type: object
+      required: [id, date, line, shift, unitsInspected, defectsFound, passRate, inspector]
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        line:
+          type: string
+        shift:
+          type: string
+          enum: [morning, afternoon, night]
+        unitsInspected:
+          type: integer
+        defectsFound:
+          type: integer
+        passRate:
+          type: number
+        inspector:
+          type: string
+        anomalyDetected:
+          type: boolean
+
+    QualityHeatmap:
+      type: object
+      required: [lines, shifts, data]
+      properties:
+        lines:
+          type: array
+          items:
+            type: string
+        shifts:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HeatmapCell"
+
+    HeatmapCell:
+      type: object
+      required: [line, shift, defectRate]
+      properties:
+        line:
+          type: string
+        shift:
+          type: string
+        defectRate:
+          type: number
+
+    # ── CARBON ──
+    CarbonOverview:
+      type: object
+      required: [totalEmissions, scope1, scope2, scope3, netZeroTargetYear, currentReductionPercent, targetReductionPercent, carbonSaved, offsetsPurchased]
+      properties:
+        totalEmissions:
+          type: number
+          description: Tonnes CO2e
+        scope1:
+          type: number
+        scope2:
+          type: number
+        scope3:
+          type: number
+        netZeroTargetYear:
+          type: integer
+        currentReductionPercent:
+          type: number
+        targetReductionPercent:
+          type: number
+        carbonSaved:
+          type: number
+        offsetsPurchased:
+          type: number
+
+    EmissionTrendPoint:
+      type: object
+      required: [month, scope1, scope2, scope3, total, target]
+      properties:
+        month:
+          type: string
+        scope1:
+          type: number
+        scope2:
+          type: number
+        scope3:
+          type: number
+        total:
+          type: number
+        target:
+          type: number
+
+    RegionalCarbon:
+      type: object
+      required: [region, country, countryCode, lat, lng, emissions, reduction, intensity]
+      properties:
+        region:
+          type: string
+        country:
+          type: string
+        countryCode:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        emissions:
+          type: number
+          description: Tonnes CO2e
+        reduction:
+          type: number
+          description: Percentage reduction
+        intensity:
+          type: number
+          description: kg CO2 per unit produced
+
+    CarbonSavingsItem:
+      type: object
+      required: [category, value, type]
+      properties:
+        category:
+          type: string
+        value:
+          type: number
+        type:
+          type: string
+          enum: [increase, decrease]
+
+    # ── AI INSIGHTS ──
+    AiInsight:
+      type: object
+      required: [id, title, domain, priority, confidenceScore, businessImpact, recommendedAction, estimatedSavings, affectedAssets, status, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        domain:
+          type: string
+          enum: [battery, fleet, supply-chain, manufacturing, carbon]
+        priority:
+          type: string
+          enum: [critical, high, medium, low]
+        confidenceScore:
+          type: number
+          description: 0-100
+        businessImpact:
+          type: string
+        recommendedAction:
+          type: string
+        estimatedSavings:
+          type: number
+        affectedAssets:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [pending, accepted, dismissed]
+        createdAt:
+          type: string
+          format: date-time
+        rootCause:
+          type: ["string", "null"]
+        riskIfIgnored:
+          type: ["string", "null"]
+
+    AgentFlow:
+      type: object
+      required: [nodes, edges]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentEdge"
+
+    AgentNode:
+      type: object
+      required: [id, label, type, status, lastActivity, insightsGenerated, position]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: [supply-chain, battery, fleet, maintenance, carbon, executive]
+        status:
+          type: string
+          enum: [active, processing, idle, error]
+        lastActivity:
+          type: string
+          format: date-time
+        insightsGenerated:
+          type: integer
+        description:
+          type: ["string", "null"]
+        position:
+          $ref: "#/components/schemas/NodePosition"
+
+    AgentEdge:
+      type: object
+      required: [id, source, target, label, animated]
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        target:
+          type: string
+        label:
+          type: string
+        animated:
+          type: boolean
+        dataFlow:
+          type: ["string", "null"]
+
+    ExecutiveSummary:
+      type: object
+      required: [headline, summary, topRisks, topOpportunities, generatedAt]
+      properties:
+        headline:
+          type: string
+        summary:
+          type: string
+        topRisks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SummaryItem"
+        topOpportunities:
+          type: array
+          items:
+            $ref: "#/components/schemas/SummaryItem"
+        generatedAt:
+          type: string
+          format: date-time
+
+    SummaryItem:
+      type: object
+      required: [title, description, impact, domain]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        impact:
+          type: string
+        domain:
+          type: string
+
+    # ── ALERTS ──
+    Alert:
+      type: object
+      required: [id, title, domain, severity, message, timestamp, acknowledged]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        domain:
+          type: string
+          enum: [battery, fleet, supply-chain, manufacturing, carbon, system]
+        severity:
+          type: string
+          enum: [critical, warning, info]
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        acknowledged:
+          type: boolean
+        assetId:
+          type: ["string", "null"]
+        actionUrl:
+          type: ["string", "null"]
