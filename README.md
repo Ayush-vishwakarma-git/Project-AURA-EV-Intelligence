@@ -1,9 +1,9 @@
-# 🚀 Project AURA
+#  Project AURA
 ## AI Unified Readiness & Analytics for Industrial EV Transition
 
 ---
 
-### 📌 Project Overview
+###  Project Overview
 
 **Project AURA** is an AI-powered Enterprise Command Center designed to accelerate India's industrial EV transition. It addresses both the **industrial adoption gap** and the **manufacturing supply chain gap** through a Multi-Agent Intelligence System.
 
@@ -11,7 +11,7 @@
 
 ---
 
-### 🎯 Problem Statement
+###  Problem Statement
 
 | Challenge | Data |
 | :--- | :--- |
@@ -25,7 +25,7 @@ The barrier is **not financial incentives** — it's **operational intelligence*
 
 ---
 
-### 🧠 Solution Architecture
+###  Solution Architecture
 
 Project AURA consists of **3 AI Agents** + **1 Orchestrator** + **Enterprise Dashboard**:
 
@@ -40,7 +40,7 @@ graph LR
 
 ---
 
-### 🤖 AI Agents
+###  AI Agents
 
 | Agent | Function | Key Output |
 | :--- | :--- | :--- |
@@ -50,7 +50,7 @@ graph LR
 
 ---
 
-### 🔗 Multi-Agent Orchestrator (INNOVATION)
+###  Multi-Agent Orchestrator (INNOVATION)
 
 **Agent Collaboration in action:**
 
@@ -62,7 +62,7 @@ graph LR
 
 ---
 
-### 📁 Repository Structure
+###  Repository Structure
 
 ```
 Project-AURA-EV-Intelligence/
@@ -86,7 +86,7 @@ Project-AURA-EV-Intelligence/
 
 ---
 
-### ⚙️ Getting Started
+###  Getting Started
 
 1. Create a Python virtual environment.
 2. Install dependencies: `pip install -r requirements.txt`
@@ -95,6 +95,6 @@ Project-AURA-EV-Intelligence/
 
 ---
 
-### 📌 Notes
+###  Notes
 
 This scaffold is intended as the base repository layout and includes placeholder data and agent modules that can be extended for production readiness.
